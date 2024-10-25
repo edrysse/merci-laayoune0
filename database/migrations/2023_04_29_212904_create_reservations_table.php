@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->increments('id');
-            // $table->foreignId('id_user')->constrained('users')->onDelete('cascade');
+            $table->foreignId('id_user')->constrained('users')->onDelete('cascade');
             $table->string('date');
             $table->string('heure');
             $table->string('gens');
@@ -30,6 +30,13 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Drop the foreign key if it exists before dropping the table
+        Schema::table('reservations', function (Blueprint $table) {
+            if (Schema::hasColumn('reservations', 'id_user')) {
+                $table->dropForeign(['id_user']);
+            }
+        });
+
         Schema::dropIfExists('reservations');
     }
 };
